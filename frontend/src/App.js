@@ -30,6 +30,7 @@ function App() {
   const [rating,setRating] = useState(0);
   const [showRegister, setShowRegister] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
+
   useEffect(()=>{
     const getPins = async()=>{
       try {
@@ -79,6 +80,20 @@ function App() {
     myStorage.removeItem("user");
     setCurrentUser(null);
   }
+
+  const handleDeletePin = async (id) => {
+    try {
+      const pinToDelete = pins.find((pin) => pin._id === id);
+      if (pinToDelete.username === myStorage.getItem("user")) {
+        await axios.delete(`/pins/${id}`);
+        setPins((prevPins) => prevPins.filter((pin) => pin._id !== id));
+        setCurrentPlaceId(null);
+      } 
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div className="App">
       <Map
@@ -127,6 +142,12 @@ function App() {
               <label>資訊</label>
                 <span className='username'>由<b>{p.username}</b>創建</span>
                 <span className='date'>{format(p.createdAt)}</span>
+                {p.username === myStorage.getItem("user") && (
+                  <Icon.TrashFill 
+                    className='deletePin'
+                    onClick={() => handleDeletePin(p._id)}
+                  />                              
+                )}
             </div>
         </Popup>
         )}
@@ -159,7 +180,7 @@ function App() {
                 <option value="4">4</option>
                 <option value="5">5</option>
               </select>
-              <button className='submitButton' type='submit'>Add Pin</button>
+              <button className='submitButton' type='submit'>新增圖標</button>
             </form>
         </div>    
         </Popup> 

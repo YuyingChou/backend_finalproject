@@ -21,4 +21,18 @@ router.get('/',async(req,res)=>{
     }
 });
 
+//delete a pin
+router.delete('/:id', async (req, res) => {
+    try {
+      const deletedPin = await Pin.findByIdAndDelete(req.params.id);
+      if (!deletedPin) {
+        res.status(404).json({ message: 'Pin不存在' });
+        return;
+      }
+      res.status(200).json({ message: 'Pin已被刪除' });
+    } catch (err) {
+      res.status(400).json(err);
+    }
+  });
+
 module.exports = router;
